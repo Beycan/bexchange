@@ -78,19 +78,27 @@
 
       <h3 class="text-xl my-10">Mejores Ofertas de Cambio</h3>
       <table>
-        <tr v-for="m in markets" :key="`${m.exchangeId}-${m.priceUsd}`" class="border-b">
+        <tr
+          v-for="m in markets"
+          :key="`${m.exchangeId}-${m.priceUsd}`"
+          class="border-b"
+        >
           <td>
-            <b>{{m.exchangeId}}</b>
+            <b>{{ m.exchangeId }}</b>
           </td>
-          <td>{{m.priceUsd|dollar}}</td>
-          <td>{{m.baseSymbol}}/{{m.quoteSymbol}}</td>
+          <td>{{ m.priceUsd | dollar }}</td>
+          <td>{{ m.baseSymbol }}/{{ m.quoteSymbol }}</td>
           <td>
             <px-button
-            v-if="!m.url"
-             @custom-click="getWebsite(m)" :is-loading="m.isLoading||false">
-             <slot>Obtener Link</slot>
+              v-if="!m.url"
+              @custom-click="getWebsite(m)"
+              :is-loading="m.isLoading || false"
+            >
+              <slot>Obtener Link</slot>
             </px-button>
-            <a v-else class="hover:underline text-green-600" target="_blanck">{{m.url}}</a>
+            <a v-else class="hover:underline text-green-600" target="_blanck">{{
+              m.url
+            }}</a>
           </td>
         </tr>
       </table>
@@ -99,17 +107,17 @@
 </template>
 
 <script>
-import PxButton from '@/components/PxButton'
+import PxButton from "@/components/PxButton";
 import api from "@/api";
 export default {
   name: "CoinDetail",
-  components:{PxButton},
+  components: { PxButton },
   data() {
     return {
       isLoading: false,
       asset: {},
       history: [],
-      markets:[]
+      markets: []
     };
   },
   computed: {
@@ -135,24 +143,30 @@ export default {
     this.getCoin();
   },
   methods: {
-      getWebsite(exchange){
-          this.$set(exchange,'isLoading',true)
-          return api.getExchange(exchange.exchangeId).then(res=>{
-              //exchange.url=res.exchangeUrl
-              this.$set(exchange,'url',res.exchangeUrl) //se usa esto porque la propiedad url no estuvo creada desde el inicio
-          }).finally(()=>{
-              this.$set(exchange,'isLoading',false)
-          })
-      }
-      ,
+    getWebsite(exchange) {
+      this.$set(exchange, "isLoading", true);
+      return api
+        .getExchange(exchange.exchangeId)
+        .then(res => {
+          //exchange.url=res.exchangeUrl
+          this.$set(exchange, "url", res.exchangeUrl); //se usa esto porque la propiedad url no estuvo creada desde el inicio
+        })
+        .finally(() => {
+          this.$set(exchange, "isLoading", false);
+        });
+    },
     getCoin() {
       const id = this.$route.params.id;
       this.isLoading = true;
-      Promise.all([api.getAsset(id), api.getAssetHistory(id),api.getMarkets(id)])
-        .then(([asset, history,markets]) => {
+      Promise.all([
+        api.getAsset(id),
+        api.getAssetHistory(id),
+        api.getMarkets(id)
+      ])
+        .then(([asset, history, markets]) => {
           this.asset = asset;
           this.history = history;
-          this.markets=markets;
+          this.markets = markets;
         })
         .finally(() => (this.isLoading = false));
     }
